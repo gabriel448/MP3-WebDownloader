@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MP3 Downloader</title>
+</head>
+<body>
+    <h1>Youtube MP3 Downloader</h1>
+    {% with messages = get_flashed_messages() %}
+        {%if messages %}
+            <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>    
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <form action="/" method="post">
+        <label for="url">URL do YouTube: </label><br>
+        <input type="text" id="url" name="url" size="50"><br><br>
+
+        <input type="radio" id="video" name="tipo_download" value="video" checked>
+        <label for="video">Video Unico</label><br>
+        <input type="radio" id="playlist" name="tipo_download" value="playlist">
+        <label for="playlist">Playlist</label><br><br>
+
+        <button type="submit">Baixar MP3</button>
+    </form>
+</body>
+</html>
