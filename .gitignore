@@ -1,0 +1,42 @@
+# Bytecode e caches do Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pdb
+
+# Ambientes virtuais
+.venv/
+venv/
+ENV/
+env/
+
+# Configuração de pacotes e builds
+*.egg-info/
+*.egg
+dist/
+build/
+.eggs/
+
+# Logs e temporários
+*.log
+*.tmp
+*.temp
+
+# Configuração do VS Code
+.vscode/
+.history/
+
+# Configuração do sistema
+.DS_Store
+Thumbs.db
+
+# Arquivos de testes
+.coverage
+.pytest_cache/
+.tox/
+.mypy_cache/
+.pyre/
+
+# Arquivos de download temporário
+downloads/
