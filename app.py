@@ -75,3 +75,5 @@ def pagina_inicial():
 #se tiver na main ele carrega a aplicacao (caso alguma funcao daqui for chamada em outro arquivo ele nao carrega tudo dnv)
 if __name__ == '__main__':
     app.run(debug=True)
+
+#teste
