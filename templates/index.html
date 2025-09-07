@@ -67,6 +67,9 @@
                             
                             //coloca essa ancora no nosso container
                             statusContainer.appendChild(downloadLink);
+                            
+                            //chama a rota pra limpar a task id desse download(pq ja foi concluido)
+                            fetch('/clear-task');
                         }else{
                             //aq eh se deu ruim em alguma coisa
                             statusContainer.innerHTML = '<p>Download concluido, mas nenhum arquivo foi gerado. verifique a URL.</p>';
