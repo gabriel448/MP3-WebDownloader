@@ -28,5 +28,67 @@
 
         <button type="submit">Baixar MP3</button>
     </form>
+
+    <div id="status-container"></div>
+
+    
+    <script>
+        //nesse script esta a logica de verificar o status do download
+
+        //pega o task_id que o flask ja colocou na sessao do usuario
+        const taskId = "{{ task_id or ''}}";
+
+        function checkStatus(){
+            //verifica se o task_id existe, se nao ele nem executa nada na funcao
+            if(!taskId) return;
+
+            //pega o container que criamos em cima e colocamos numa variavel, assim podendo usar essa variavel pra adicionar elementos no container
+            const statusContainer = document.getElementById('status-container');
+            statusContainer.innerHTML = '<p>Iniciando download, por favor aguarde...</p>';
+            
+            //cria um intervalo que executa o codigo dntro do bloco de 2 em 2 segundos
+            const interval = setInterval(() =>{
+                //fetch recebe um dicionario do flask que contem a informacoes do status do download
+                fetch('/status/${taskId}')
+                //assim que recebe ele transforma em JSON
+                .then(response => response.json())
+                //data eh oque usamos pra acessar as informacoes que recebemos, que etsao dentro do JSON agora
+                .then(data => {
+                    //mostra na tela o status
+                    statusContainer.innerHTML = '<p>Status: ${data.status}</p>';
+
+                    if(data.state === 'SUCCESS') {
+                        clearInterval(interval)
+                        if (data.result){
+                            //cria uma ancora com href na rota do download pra o arquivo baixado, essa rota faz o download do arquivo
+                            const downloadLink = document.createElement('a');
+                            downloadLink.href = '/download/${data.result}';
+                            downloadLink.innerText = 'Baixar "${data.result}"'
+                            
+                            //coloca essa ancora no nosso container
+                            statusContainer.appendChild(downloadLink);
+                        }else{
+                            //aq eh se deu ruim em alguma coisa
+                            statusContainer.innerHTML = '<p>Download concluido, mas nenhum arquivo foi gerado. verifique a URL.</p>';
+                        }
+                    
+                    }else if (data.state === 'FAILURE'){
+                        clearInterval(interval);
+                        //aq tbm so que aqui a gente sabe oque aconteceu(celery)
+                        statusContainer.innerHTML = '<p>Ocorreu um erro: ${data.status}</p>';
+                    } 
+                })  
+                .catch(err => {
+                    clearInterval(interval);
+                    //mais erro, mas tambem sabemos oque aconteceu +/-, caso aconteca
+                    console.error('Erro ao verificar status: ', err);
+                    statusContainer.innerHTML = '<p>Não foi possivel verificar o status do download.</p>';              
+                })
+            }, 2000);
+        }
+
+        //so executa essa funcao quando a pagina estiver 100% carregada
+        window.onload = checkStatus;
+    </script>
 </body>
 </html>
