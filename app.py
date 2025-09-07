@@ -1,8 +1,10 @@
 import os
 import shutil
-from flask import Flask,render_template,request,send_from_directory, flash, url_for, redirect,session
+from flask import Flask,render_template,request,send_from_directory, flash, url_for, redirect,session,jsonify
 from funcoes import url_verify
 from tasks import mp3_downloader, playlist_downloader
+from celery.result import AsyncResult
+from celery_worker import celery_app
 
 #crie a pasta downloads se ela nao existir
 if not os.path.exists('downloads'):
@@ -51,6 +53,36 @@ def pagina_inicial():
     task_id = session.get('task_id')
     #entao ele retorna a pagina inicial com o id da sessao
     return render_template('index.html', task_id=task_id)
+
+#nova rota pra verificar o status do download
+@app.route('/status/<task_id>')
+def task_status(task_id):
+    #objeto do celery que tem todas a informacoes de uma task especifica atraves do seu id
+    task = AsyncResult(task_id, app=celery_app)
+
+    #verifica se esta pendente, em processamento, finalizado, ou se ocorreu um erro
+    #gerando um dicionario com o stado(mais formal e oficial) e o status(oque significa na pratica)
+    if task.state == 'PENDING':
+        response = {
+            'state': task.state,
+            'status': 'Na fila...'
+        }
+    elif task.state != 'FAILURE':
+        response = {
+            'state': task.state,
+            'status': 'Processando...'
+        }
+        if task.state == 'SUCCESS':
+            #aqui ele retorna o resultado que no caso eh o nome do arquivo mp3 que baixamos
+            response['result'] = task.result
+    else:
+        response = {
+            'state': task.state,
+            'status': str(task.info)
+        }
+
+    #retorna o dicionario em um JSON para o JS analisar e decidir oque fazer dependendo da situacao do download
+    return jsonify(response)
 
 #se tiver na main ele carrega a aplicacao (caso alguma funcao daqui for chamada em outro arquivo ele nao carrega tudo dnv)
 if __name__ == '__main__':
