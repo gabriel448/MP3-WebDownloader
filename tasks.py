@@ -39,7 +39,10 @@ def playlist_downloader(url, local):
                 for arquivo in os.listdir(caminho_da_pasta):
                     if arquivo.endswith('.mp3'):
                         #se sim, retorna o nome da pasta,q eh o nome da playlist
-                        return nome_da_nova_pasta
+                        return {
+                            'type': 'playlist',
+                            'name': nome_da_nova_pasta
+                        }
         #caso nada for baixado retorna None
         return None
     
@@ -74,7 +77,10 @@ def mp3_downloader(url, local):
 
         for nome in novos_arquivos:
             if nome.endswith(".mp3"):
-                return nome
+                return {
+                    'type': 'arquivo',
+                    'name': nome
+                }
         return None
     except Exception as e:
         print(f'\n[ERRO] Ocorreu um erro no servidor: {e}')
