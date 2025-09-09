@@ -1,8 +1,9 @@
+import os
 from celery import Celery
 
 #define a url do "quadro de avisos" (Redis)
 #o '0' no final refere ao banco de dados padrao do Redis
-REDIS_URL = 'redis://localhost:6379/0'
+REDIS_URL = os.environ.get('CELERY_BROKER_URL','redis://localhost:6379/0')
 
 #Cria a instancia do Celery
 #tasks eh o nome do modulo de tarefas
