@@ -10,23 +10,23 @@ services:
 
     #mapeia a porta 6379 do container para sua porta 6379 na sua maquina
     ports:
-      -"6379:6379"
+      - "6379:6379"
 
   web:
     #usa o dockerfile pra criar a imagem
     build: .
     
     #comando que inicia o servico
-    command: gunicorn --bing 0.0.0.0:5000 app:app
+    command: gunicorn --bind 0.0.0.0:5000 app:app
 
     #sincroniza a pasta atual com a app, garantindo arquivos atualizados
     #assim sempre que mudarmos algo no projeto nao precisamos recriar a imagem 
     volumes:
-      -./:/app
+      - ./:/app 
 
     #mapeia a porta 5000 do container com a 5000 da sua maquina, pra acessar o site
     ports:
-      -"5000:5000"
+      - "5000:5000"
     
     #variavel de ambiente pra se comunicar com o redis
     environment:
@@ -51,7 +51,7 @@ services:
     #sincroniza a pasta atual com a app, garantindo arquivos atualizados
     #assim sempre que mudarmos algo no projeto nao precisamos recriar a imagem 
     volumes:
-      -./:/app
+      - ./:/app
 
     #precisa que o servico redis seja iniciado antes tbm
     depends_on:
