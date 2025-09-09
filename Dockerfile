@@ -1,6 +1,11 @@
 #define uma imagem base pra usar
 FROM python:3.9-slim
 
+#comando pra instalar o ffmpeg nos containers
+RUN apt-get update &&\
+    apt-get install -y ffmpeg &&\
+    apt-get clean
+
 #cria uma pasta chamada app pra organizar tudo dentro dessa pasta no container
 WORKDIR /app
 
