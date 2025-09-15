@@ -20,11 +20,19 @@ app.secret_key='0101'
 #define o local do download
 DOWNLOAD_FOLDER = os.path.join(os.getcwd(), 'downloads')
 
-#rota principal que aceita GET e POST
-@app.route('/', methods=['GET', 'POST'])
-def pagina_inicial():
+#rota principal que aceita GET e POST e um parametro opcional, caso o video for privado(olhar index.html linha:69)
+@app.route('/',defaults = {'privado': False}, methods=['GET', 'POST'])
+@app.route('/<privado>', methods=['GET', 'POST'])
+def pagina_inicial(privado):
+
+    #verifica se o video eh privado
+    if privado:
+        flash("Video privado")
+        return redirect(url_for('pagina_inicial'))
+    
     #verifica se o usuario enviou algo, se sim, executa o codigo abaixo
     if request.method == 'POST':
+
         #pega a url digitada
         url = request.form.get('url')
 
@@ -40,6 +48,7 @@ def pagina_inicial():
         #o .delay eh uma funcionalidade do celary, isso manda a tarefa pra "lista de tarefas" no Redis e assim 
         #o download fica em segundo plano e a tela nao congela enquanto faz o download
         if tipo_download == 'video':
+            
             #pegamos o retorno do delay em uma variavel task
             task = mp3_downloader.delay(url, DOWNLOAD_FOLDER)
         else:
@@ -52,7 +61,7 @@ def pagina_inicial():
     return render_template('index.html', task_id=None)
 
 #uma pagina tarefas exatamente igual a inicial porem com task_id, isso faz com que toda vez que a pagina inicial for chamada
-#com GET a task_id eh pagada, iss evita o navegador ficar mostrando "Download concluido" depois que voce sai e entra na pagina
+#com GET a task_id eh apagada, iss evita o navegador ficar mostrando "Download concluido" depois que voce sai e entra na pagina
 #assim sempre que abrimos o site temos a pagina limpa e etc..
 @app.route('/task/<task_id>')
 def pagina_tarefa(task_id):
