@@ -1,6 +1,7 @@
 import os
 from celery_worker import celery_app
 from yt_dlp import YoutubeDL
+from yt_dlp.utils import DownloadError
 
 @celery_app.task
 def playlist_downloader(url, local):
@@ -20,7 +21,17 @@ def playlist_downloader(url, local):
         #lista dos arquivos que estavam antes do download
         arquivos_antes = set(os.listdir(local))
         with YoutubeDL(ydl_opts) as ydl:
-            ydl.download([url])
+            try:
+                #trecho so pra ver se o video eh privado, se for, ele retorna uma string 'privado'
+                info = ydl.extract_info(url, download= False)
+                print('Titulo: ', info.get('title'))
+                ydl.download([url])
+            except DownloadError as e:
+                if "private" in str(e).lower() or 'sign in' in str(e).lower():
+                    return 'privado'
+                else:
+                    print(f'ERRO: {e}')
+                    return f'ERRO {e}'
         #lista dos arquivos que estava depois do download
         arquivos_depois = set(os.listdir(local))
         #retorna um conjunto ser() com o nome da nova pasta
@@ -69,7 +80,17 @@ def mp3_downloader(url, local):
         
         arquivos_antes = set(os.listdir(local))#faz uma lista dos arquivos da pasta antes do download
         with YoutubeDL(ydl_opts) as ydl:
-            ydl.download([url])
+            try:
+                #trecho so pra ver se o video eh privado, se for, ele retorna uma string 'privado'
+                info = ydl.extract_info(url, download= False)
+                print('Titulo: ', info.get('title'))
+                ydl.download([url])
+            except DownloadError as e:
+                if "private" in str(e).lower() or 'sign in' in str(e).lower():
+                    return 'privado'
+                else:
+                    print(f'ERRO: {e}')
+                    return f'ERRO {e}'
 
         #ve se tem algo novo
         arquivos_depois = set(os.listdir(local))
