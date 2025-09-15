@@ -1,7 +1,7 @@
 import os
 import shutil
 import tempfile
-from flask import Flask,render_template,request,send_from_directory, flash, url_for, redirect,session,jsonify, send_file
+from flask import Flask,render_template,request,send_from_directory, flash, url_for, redirect,session,jsonify, send_file, after_this_request
 from funcoes import url_verify
 from tasks import mp3_downloader, playlist_downloader
 from celery.result import AsyncResult
@@ -100,10 +100,27 @@ def task_status(task_id):
 
 @app.route('/downloads/<string:type>/<path:name>')
 def download(type,name):
-    if type == 'arquivo':
-        #so manda o arquivo direto pro downloads do usuario
-        return send_from_directory(DOWNLOAD_FOLDER,name, as_attachment = True)
+
+    #essa funcao so sera executada quando a download() retornar a reposta pro usuario(no caso baixar o arquivo)
+    @after_this_request
+    def delete_file(response):
+        try:
+            path = os.path.join(os.getcwd(), 'downloads', name)
+
+            #verifica se eh uma pasta ou um arquivo, e deleta oque queremos de acordo
+            if os.path.isdir(path):
+                shutil.rmtree(path)
+            else:
+                os.remove(path)
+            print(f'{name} DELETADO DO SERVIDOR')
+
+        except Exception as e:
+            print(f'ERRO: {e}')
+        return response
     
+    if type == 'arquivo':
+        return send_from_directory(DOWNLOAD_FOLDER, name, as_attachment=True)
+
     elif type == 'playlist':
         #pega o diretorio onde estao baixados os mp3s da playlist
         playlist_path = os.path.join(DOWNLOAD_FOLDER, name)
