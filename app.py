@@ -101,17 +101,25 @@ def task_status(task_id):
 @app.route('/downloads/<string:type>/<path:name>')
 def download(type,name):
 
+    #essa funcao so sera executada quando a download() retornar a reposta pro usuario(no caso baixar o arquivo)
     @after_this_request
     def delete_file(response):
         try:
-            os.remove(os.path.join(os.getcwd(), 'downloads', name))
+            path = os.path.join(os.getcwd(), 'downloads', name)
+
+            #verifica se eh uma pasta ou um arquivo, e deleta oque queremos de acordo
+            if os.path.isdir(path):
+                shutil.rmtree(path)
+            else:
+                os.remove(path)
             print(f'{name} DELETADO DO SERVIDOR')
+
         except Exception as e:
             print(f'ERRO: {e}')
         return response
     
     if type == 'arquivo':
-        return send_from_directory(DOWNLOAD_FOLDER, name)
+        return send_from_directory(DOWNLOAD_FOLDER, name, as_attachment=True)
 
     elif type == 'playlist':
         #pega o diretorio onde estao baixados os mp3s da playlist
