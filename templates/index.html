@@ -80,15 +80,12 @@
                             downloadLink.innerText = `Baixar '${result_name}'`;
                             
                             //cria uma ancora pra recarregar a pagina pra um novo download limpando a task_id
-                            const newDownloadLink = document.createElement('a');
-                            newDownloadLink.href = `/downloads/nada/${result_name}`;
-                            newDownloadLink.innerText = 'Novo Download';
                             
                             //limpa e coloca essas ancoras na tela
                             //statusContainer.innerHTML = '';
                             statusContainer.appendChild(downloadLink);
                             statusContainer.appendChild(document.createElement('br'))
-                            statusContainer.appendChild(newDownloadLink);
+
 
                         }else{
 

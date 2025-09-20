@@ -118,9 +118,7 @@ def download(type,name):
         except Exception as e:
             print(f'ERRO: {e}')
         return response
-    if type == 'nada':
-        print('NOVO DOWNLOAD SEM BAIXAR')
-    elif type == 'arquivo':
+    if type == 'arquivo':
         return send_from_directory(DOWNLOAD_FOLDER, name, as_attachment=True)
 
     elif type == 'playlist':
