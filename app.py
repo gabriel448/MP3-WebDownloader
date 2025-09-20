@@ -113,12 +113,14 @@ def download(type,name):
             else:
                 os.remove(path)
             print(f'{name} DELETADO DO SERVIDOR')
+            return redirect(url_for('pagina_inicial'))
 
         except Exception as e:
             print(f'ERRO: {e}')
         return response
-    
-    if type == 'arquivo':
+    if type == 'nada':
+        print('NOVO DOWNLOAD SEM BAIXAR')
+    elif type == 'arquivo':
         return send_from_directory(DOWNLOAD_FOLDER, name, as_attachment=True)
 
     elif type == 'playlist':
