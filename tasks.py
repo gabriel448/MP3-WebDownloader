@@ -11,6 +11,7 @@ def playlist_downloader(url, local):
             'outtmpl': os.path.join(local,'%(playlist)s','%(title)s.%(ext)s'),
             'ignoreerrors': True,
             'cookiefile': '/home/sousa/MP3-WebDownloader/cookies.txt',
+            'ffmpeg_location': '/usr/bin/ffmpeg',
             # 'progress_hooks': [progresso_hook],
             'postprocessors': [{
                 'key': 'FFmpegExtractAudio',
@@ -69,6 +70,7 @@ def mp3_downloader(url, local):
             'format': 'bestaudio/best',
             'outtmpl': os.path.join(local, '%(title)s.%(ext)s'),
             'cookiefile': '/home/sousa/MP3-WebDownloader/cookies.txt',
+            'ffmpeg_location': '/usr/bin/ffmpeg',
             # 'progress_hooks': [progresso_hook],
             'postprocessors': [{
                 'key': 'FFmpegExtractAudio',
