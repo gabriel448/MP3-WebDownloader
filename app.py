@@ -113,7 +113,6 @@ def download(type,name):
             else:
                 os.remove(path)
             print(f'{name} DELETADO DO SERVIDOR')
-            return redirect(url_for('pagina_inicial'))
 
         except Exception as e:
             print(f'ERRO: {e}')
